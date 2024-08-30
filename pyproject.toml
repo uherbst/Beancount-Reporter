@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Beancount-Reporter"
+description = "Create Reports from your beancount data"
+requires-python = ">=3.12"
+version = '0.1.0'
+authors = [ {name= "Ulrich Herbst", email="ulrich.herbst@uherbst.de"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+dependencies = [
+    # Add runtime dependencies here
+]
