@@ -12,4 +12,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 dependencies = [
     # Add runtime dependencies here
+    "polars",
+    "beancount",
+    "beanquery",
+    "icecream",
 ]

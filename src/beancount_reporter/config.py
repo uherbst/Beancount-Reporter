@@ -6,12 +6,26 @@ from argparse import ArgumentParser
 import logging
 import importlib.metadata
 import os
+from icecream import ic
 
 # We use toml as configuration language
 if sys.version_info >= (3, 11):
     import tomllib
 else:
     import tomli as tomllib
+
+
+@dataclass
+class DictConfig:
+    """helper class for dicts (in this context: toml-tables)"""
+
+    def __init__(self, conf):
+        if not isinstance(conf, dict):
+            raise TypeError(f"dict expected, found {type(conf).__name__}")
+
+        self._raw = conf
+        for key, value in self._raw.items():
+            setattr(self, key, value)
 
 
 @dataclass
@@ -31,19 +45,19 @@ class Config:
         # Which parameters are required to be set by user ?
         # (obviously these list is only for parameters WITHOUT
         # default values)
+        # Key is always the toml table name - can't be empty
         self.required = [
-            "BEANCOUNT_FILE",
+            "common.beancount_file",
         ]
 
         # Which parameters could be set via ENV ?
-        self.from_env = ["debug", "BEANCOUNT_FILE"]
+        self.from_env = ["debug", "common.beancount_file"]
 
         self.version = importlib.metadata.version("Beancount-Reporter")
 
         args = self.read_cmdline()
         self.debug = args.debug
         self.config_file = args.file
-        self.max_loops = args.n
 
         self.logger = self.setup_custom_logger("BeancountReporter")
 
@@ -74,6 +88,7 @@ class Config:
 
         # Step 5: Check, if all required parameters are set
         self.check_required_config()
+        # ic(vars(self))
 
     def read_cmdline(self):
         """Handle command line arguments for SolaceMonitorMessageAge."""
@@ -130,15 +145,24 @@ class Config:
                 content = tomllib.load(f)
         except Exception as ex:
             self.logger.error(f"Can't read config file {file}:")
-            self.config_filelogger.error(ex)
+            self.logger.error(ex)
             exit()
 
         # Now, we need to traverse content and put them into attributs
         # of this class
-        # FIXME:
+        # We transpose table-names as "xxx."
+        # [xxx]
+        # abc=123
+        # => self.xxx.abc=123
+
         if content is not None:
-            for key, value in content.items():
-                setattr(self, key.lower(), value)
+            for table, tablecontent in content.items():
+                if not isinstance(tablecontent, dict):
+                    self.logger.error(
+                        f"dict expected, found {type(tablecontent).__name__}"
+                    )
+
+                setattr(self, table, DictConfig(tablecontent))
 
     def read_config_from_env(self):
         """Read config from ENVIRONMENT"""
@@ -148,6 +172,16 @@ class Config:
 
     def check_required_config(self):
         """Check, if all required parameters are available"""
+        # The classic "hasattr(self, parameter)"" does not work for nested dataclasses.
+        # Therefor, we split the parameter for nested dataclasses
         for parameter in self.required:
-            if not hasattr(self, parameter):
-                self.logger.error(f"Required config parameter {parameter} not found!")
+            levels = parameter.split(".")
+            outer = self
+            for level in levels:
+                if not hasattr(outer, level):
+                    self.logger.error(
+                        f"Required config parameter {parameter} not found!"
+                    )
+                    exit(-1)
+                else:
+                    outer = getattr(outer, level)
