@@ -17,4 +17,4 @@ ic.enable()
 if __name__ == "__main__":
     config = br.Config()
     df = br.get_financial_overview_dataframe(config)
-    br.output_df(df)
+    br.output_financial_overview(df)

@@ -3,26 +3,18 @@
 from icecream import ic
 import datetime
 import os
-from typing import cast
 
-# from beancount_reporter.config import Config
-# from beancount.loader import load_file
-# from beanquery.query import run_query
-# from beanquery.numberify import numberify_results
 import beancount as bc
-
-# import beanquery as bq
 from beanquery import query
 from beanquery import numberify
 
-# FIXME: Verschiebe ich Berechnungen in andere Module ?
 import polars as pl
 
 
 def get_list_of_dates_for_query(config):
     """Return list of points in the past to query for a balance."""
-    # FIXME: start_date = datetime.date.fromisoformat("2014-01-01")
-    start_date = datetime.date.fromisoformat("2024-01-01")
+    start_date = datetime.date.fromisoformat("2014-01-01")
+    # start_date = datetime.date.fromisoformat("2024-01-01")
     if hasattr(config.common, "start"):
         start_date = datetime.date.fromisoformat(config.common.start)
     end_date = datetime.date.today()
@@ -58,10 +50,10 @@ def get_financial_overview_dataframe(config):
         exit(-1)
 
     entries, _, opts = bc.loader.load_file(config.common.beancount_file)
-    ## ic(opts)
     currency = opts["operating_currency"][0]
     name_assets = opts["name_assets"]
     name_liabilities = opts["name_liabilities"]
+    # ic(opts)
 
     dates = get_list_of_dates_for_query(config)
 

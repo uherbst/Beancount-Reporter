@@ -16,4 +16,5 @@ dependencies = [
     "beancount",
     "beanquery",
     "icecream",
+    "great_tables",
 ]
