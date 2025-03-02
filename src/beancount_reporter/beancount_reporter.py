@@ -3,6 +3,7 @@
 from icecream import ic
 import datetime
 import os
+import sys
 
 import beancount as bc
 from beanquery import query
@@ -53,7 +54,6 @@ def get_financial_overview_dataframe(config):
     currency = opts["operating_currency"][0]
     name_assets = opts["name_assets"]
     name_liabilities = opts["name_liabilities"]
-    # ic(opts)
 
     dates = get_list_of_dates_for_query(config)
 
@@ -62,13 +62,14 @@ def get_financial_overview_dataframe(config):
     for date in dates:
         beanquery = f"SELECT   account,   YEAR(date) AS year,\
         MONTH(date) as month,\
-        SUM(convert(position, 'EUR', date)) AS amount\
+        value(SUM(position)) as amount \
         FROM OPEN ON {date.isoformat()} CLOSE ON {date.isoformat()} \
         WHERE {where_clause} \
-        GROUP BY account, year, month\
+        GROUP BY account, year, month \
         ORDER BY account, year, month"
 
         cols, rows = query.run_query(entries, opts, beanquery)
+
         # For later calcs, I need month with leading 0
         my_rows = []
         for row in rows:
@@ -112,10 +113,11 @@ def get_financial_overview_dataframe(config):
             index="Konto",
             aggregate_function="sum",
         )
-    )
+    ).fill_null(0.00)
     dummy = df.sum()
     dummy[0, "Konto"] = "Summe"
     df = pl.concat([df, dummy])
+
     return df
 
 
