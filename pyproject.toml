@@ -17,4 +17,5 @@ dependencies = [
     "beanquery",
     "icecream",
     "great_tables",
+    "pyxirr"
 ]

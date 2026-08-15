@@ -1,3 +1,4 @@
 from beancount_reporter.beancount_reporter import get_financial_overview_dataframe
+from beancount_reporter.beancount_reporter import get_financial_performance_df
 from beancount_reporter.config import Config
 from beancount_reporter.output import output_financial_overview

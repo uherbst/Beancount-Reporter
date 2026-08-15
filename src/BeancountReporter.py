@@ -18,3 +18,6 @@ if __name__ == "__main__":
     config = br.Config()
     df = br.get_financial_overview_dataframe(config)
     br.output_financial_overview(df)
+    # Erstmal nur SP500
+    #df = br.get_financial_performance_df(config)
+    #print(df)
