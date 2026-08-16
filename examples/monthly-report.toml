@@ -1,0 +1,12 @@
+# Configuration for examples/monthly-report.beancount.
+[common]
+beancount_file = "examples/monthly-report.beancount"
+start = "2025-01-01"
+end = "2025-05-31"
+
+# Each group combines the named account and all of its child accounts into one
+# row in the financial overview. Accounts not listed here remain individual.
+[groups]
+"Liquid funds" = ["Assets:Bank"]
+"Home" = ["Assets:Home"]
+"Mortgage" = ["Liabilities:Mortgage"]

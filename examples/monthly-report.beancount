@@ -1,0 +1,45 @@
+option "title" "Example household ledger"
+option "operating_currency" "EUR"
+
+2025-01-01 open Assets:Bank:Checking EUR
+2025-01-01 open Assets:Bank:Savings EUR
+2025-01-01 open Assets:Home EUR
+2025-01-01 open Liabilities:Mortgage EUR
+2025-01-01 open Income:Salary EUR
+2025-01-01 open Expenses:Living EUR
+2025-01-01 open Equity:Opening-Balances EUR
+
+2025-01-01 * "Opening balances"
+  Assets:Bank:Checking       3,000.00 EUR
+  Assets:Bank:Savings       12,000.00 EUR
+  Assets:Home              180,000.00 EUR
+  Liabilities:Mortgage    -120,000.00 EUR
+  Equity:Opening-Balances  -75,000.00 EUR
+
+2025-02-01 * "Salary"
+  Assets:Bank:Checking       4,200.00 EUR
+  Income:Salary             -4,200.00 EUR
+
+2025-02-03 * "Monthly living costs"
+  Expenses:Living            2,100.00 EUR
+  Assets:Bank:Checking      -2,100.00 EUR
+
+2025-03-01 * "Move money to savings"
+  Assets:Bank:Savings        1,000.00 EUR
+  Assets:Bank:Checking      -1,000.00 EUR
+
+2025-03-03 * "Mortgage repayment"
+  Liabilities:Mortgage       800.00 EUR
+  Assets:Bank:Checking      -800.00 EUR
+
+2025-04-01 * "Salary"
+  Assets:Bank:Checking       4,200.00 EUR
+  Income:Salary             -4,200.00 EUR
+
+2025-04-03 * "Monthly living costs"
+  Expenses:Living            2,100.00 EUR
+  Assets:Bank:Checking      -2,100.00 EUR
+
+2025-05-03 * "Mortgage repayment"
+  Liabilities:Mortgage       800.00 EUR
+  Assets:Bank:Checking      -800.00 EUR

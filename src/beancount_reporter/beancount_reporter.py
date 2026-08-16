@@ -32,16 +32,31 @@ def get_list_of_dates_for_query(config, entries):
     if hasattr(config.common, "end"):
         end_date = datetime.date.fromisoformat(config.common.end)
 
-    # Last 12 completed months (ascending). Each is queried on the 1st of the
-    # month that follows it, so it reflects the balance at the month's end.
+    # Last 12 completed months (ascending). If ``end_date`` itself is a month
+    # end, that month is complete and belongs in the overview; otherwise the
+    # latest completed month is the preceding one. Each balance is queried on
+    # the 1st of the following month, so it reflects the month's end.
+    first_of_next_month = (
+        datetime.date(end_date.year + 1, 1, 1)
+        if end_date.month == 12
+        else datetime.date(end_date.year, end_date.month + 1, 1)
+    )
+    is_month_end = end_date == first_of_next_month - datetime.timedelta(days=1)
+    latest_month_year, latest_month = end_date.year, end_date.month
+    if not is_month_end:
+        latest_month -= 1
+        if latest_month == 0:
+            latest_month_year -= 1
+            latest_month = 12
+
     month_cols = []
-    oldest_month_year = end_date.year
-    for k in range(12, 0, -1):
-        year, month = end_date.year, end_date.month - k
+    oldest_month_year = latest_month_year
+    for k in range(11, -1, -1):
+        year, month = latest_month_year, latest_month - k
         while month <= 0:
             month += 12
             year -= 1
-        if k == 12:
+        if k == 11:
             oldest_month_year = year
         next_year, next_month = (year, month + 1) if month < 12 else (year + 1, 1)
         month_cols.append((datetime.date(next_year, next_month, 1), f"{year}-{month:02d}"))
